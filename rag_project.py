@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[117]:
+# In[5]:
 
 
 #pip install langchain
 
 
-# In[118]:
+# In[24]:
 
 
 import yaml
@@ -24,14 +24,14 @@ from langchain_openai import AzureOpenAIEmbeddings
 from langchain_openai import AzureChatOpenAI
 
 
-# In[119]:
+# In[25]:
 
 
 CHUNK_SIZE = 1_000
 CHUNK_OVERLAP = 200
 
 
-# In[120]:
+# In[26]:
 
 
 import streamlit as st
@@ -39,7 +39,36 @@ import yaml
 import os
 
 
-# In[121]:
+# In[29]:
+
+
+import requests
+
+# Chemin local
+local_path = "C:/Users/Julie-Marie Biffe/OneDrive/Documents/rag/secrets/config.yaml"
+
+# URL brute GitHub
+url = "https://raw.githubusercontent.com/juliemariebiffe/RAG_project/main/secrets/config.yaml"
+
+
+os.makedirs(os.path.dirname(local_path), exist_ok=True)
+response = requests.get(url)
+
+if response.status_code == 200:
+    with open(local_path, 'w', encoding='utf-8') as f:
+        f.write(response.text)
+    print(f"Fichier téléchargé avec succès : {local_path}")
+else:
+    print(f"Erreur lors du téléchargement (code {response.status_code})")
+
+
+# In[ ]:
+
+
+
+
+
+# In[31]:
 
 
 def read_config():
@@ -62,7 +91,25 @@ def read_config():
 config = read_config()
 
 
-# In[122]:
+# In[32]:
+
+
+import streamlit as st
+
+openai_api_key = st.secrets["OPENAI_API_KEY"]
+
+embedding_azure_endpoint = st.secrets["EMBEDDING_AZURE_ENDPOINT"]
+embedding_azure_deployment = st.secrets["EMBEDDING_AZURE_DEPLOYMENT"]
+embedding_azure_api_version = st.secrets["EMBEDDING_AZURE_API_VERSION"]
+embedding_azure_api_key = st.secrets["EMBEDDING_AZURE_API_KEY"]
+
+chat_azure_endpoint = st.secrets["CHAT_AZURE_ENDPOINT"]
+chat_azure_deployment = st.secrets["CHAT_AZURE_DEPLOYMENT"]
+chat_azure_api_version = st.secrets["CHAT_AZURE_API_VERSION"]
+chat_azure_api_key = st.secrets["CHAT_AZURE_API_KEY"]
+
+
+# In[13]:
 
 
 embedder = AzureOpenAIEmbeddings(
@@ -75,7 +122,7 @@ embedder = AzureOpenAIEmbeddings(
 vector_store = InMemoryVectorStore(embedder)
 
 
-# In[123]:
+# In[14]:
 
 
 llm = AzureChatOpenAI(
@@ -86,7 +133,7 @@ llm = AzureChatOpenAI(
 )
 
 
-# In[124]:
+# In[33]:
 
 
 def get_meta_doc(extract: str) -> str:
@@ -118,7 +165,7 @@ def get_meta_doc(extract: str) -> str:
     return response.content
 
 
-# In[125]:
+# In[41]:
 
 
 def store_pdf_file(file_path: str, doc_name: str, use_meta_doc: bool=True):
@@ -150,7 +197,7 @@ def store_pdf_file(file_path: str, doc_name: str, use_meta_doc: bool=True):
     return
 
 
-# In[126]:
+# In[35]:
 
 
 def delete_file_from_store(name: str) -> int:
@@ -163,7 +210,7 @@ def delete_file_from_store(name: str) -> int:
     return len(ids_to_remove)
 
 
-# In[127]:
+# In[36]:
 
 
 def inspect_vector_store(top_n: int=10) -> list:
@@ -183,7 +230,7 @@ def inspect_vector_store(top_n: int=10) -> list:
     return docs
 
 
-# In[128]:
+# In[37]:
 
 
 def get_vector_store_info():
@@ -205,7 +252,7 @@ def get_vector_store_info():
     }
 
 
-# In[129]:
+# In[38]:
 
 
 def retrieve(question: str):
@@ -221,7 +268,7 @@ def retrieve(question: str):
     return retrieved_docs
 
 
-# In[130]:
+# In[39]:
 
 
 def build_qa_messages(question: str, context: str) -> list[str]:
@@ -244,7 +291,7 @@ def build_qa_messages(question: str, context: str) -> list[str]:
     return messages
 
 
-# In[131]:
+# In[40]:
 
 
 def answer_question(question: str) -> str:
