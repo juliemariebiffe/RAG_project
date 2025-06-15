@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[100]:
+# In[117]:
 
 
 #pip install langchain
 
 
-# In[101]:
+# In[118]:
 
 
 import yaml
@@ -24,14 +24,14 @@ from langchain_openai import AzureOpenAIEmbeddings
 from langchain_openai import AzureChatOpenAI
 
 
-# In[102]:
+# In[119]:
 
 
 CHUNK_SIZE = 1_000
 CHUNK_OVERLAP = 200
 
 
-# In[103]:
+# In[120]:
 
 
 import streamlit as st
@@ -39,14 +39,15 @@ import yaml
 import os
 
 
-# In[104]:
+# In[121]:
 
 
 def read_config():
     import os
     import yaml
 
-    base_dir = os.path.dirname(os.path.abspath(__file__))
+    # Utilise le répertoire de travail courant
+    base_dir = os.getcwd()
     config_path = os.path.join(base_dir, 'secrets', 'config.yaml')
 
     try:
@@ -57,10 +58,11 @@ def read_config():
         print(f"Erreur de lecture du fichier YAML : {e}")
         raise
 
+
 config = read_config()
 
 
-# In[ ]:
+# In[122]:
 
 
 embedder = AzureOpenAIEmbeddings(
@@ -73,7 +75,7 @@ embedder = AzureOpenAIEmbeddings(
 vector_store = InMemoryVectorStore(embedder)
 
 
-# In[ ]:
+# In[123]:
 
 
 llm = AzureChatOpenAI(
@@ -84,7 +86,7 @@ llm = AzureChatOpenAI(
 )
 
 
-# In[ ]:
+# In[124]:
 
 
 def get_meta_doc(extract: str) -> str:
@@ -116,7 +118,7 @@ def get_meta_doc(extract: str) -> str:
     return response.content
 
 
-# In[105]:
+# In[125]:
 
 
 def store_pdf_file(file_path: str, doc_name: str, use_meta_doc: bool=True):
@@ -148,7 +150,7 @@ def store_pdf_file(file_path: str, doc_name: str, use_meta_doc: bool=True):
     return
 
 
-# In[106]:
+# In[126]:
 
 
 def delete_file_from_store(name: str) -> int:
@@ -161,7 +163,7 @@ def delete_file_from_store(name: str) -> int:
     return len(ids_to_remove)
 
 
-# In[107]:
+# In[127]:
 
 
 def inspect_vector_store(top_n: int=10) -> list:
@@ -181,7 +183,7 @@ def inspect_vector_store(top_n: int=10) -> list:
     return docs
 
 
-# In[108]:
+# In[128]:
 
 
 def get_vector_store_info():
@@ -203,7 +205,7 @@ def get_vector_store_info():
     }
 
 
-# In[109]:
+# In[129]:
 
 
 def retrieve(question: str):
@@ -219,7 +221,7 @@ def retrieve(question: str):
     return retrieved_docs
 
 
-# In[110]:
+# In[130]:
 
 
 def build_qa_messages(question: str, context: str) -> list[str]:
@@ -242,7 +244,7 @@ def build_qa_messages(question: str, context: str) -> list[str]:
     return messages
 
 
-# In[111]:
+# In[131]:
 
 
 def answer_question(question: str) -> str:
